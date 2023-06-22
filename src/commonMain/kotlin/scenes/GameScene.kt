@@ -22,7 +22,7 @@ class GameScene: Scene() {
         var points = 0
 
         //Text
-        val text = text("Points: $points", textSize = 20.0F)
+        val text = text("Points: $points", textSize = 10.0F)
             .addTo(this)
             .alignTopToTopOf(this)
             .alignLeftToLeftOf(this)
