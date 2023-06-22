@@ -28,12 +28,12 @@ class GameScene: Scene() {
             .alignLeftToLeftOf(this)
 
         // Player rectangle
-        val player = solidRect(windowBounds.width / 4f, 20f, Colors.WHITE)
+        val player = solidRect(globalBounds.width / 4f, 20f, Colors.WHITE)
             .addTo(this)
-        player.xy(0f, windowBounds.height - player.height) //Position is at the bottom of the screen
+        player.xy(0f, globalBounds.height - player.height) //Position is at the bottom of the screen
 
         //Enemy rectangle
-        val enemy = solidRect(windowBounds.width / 4f, 20f, Colors.WHITE)
+        val enemy = solidRect(globalBounds.width / 4f, 20f, Colors.WHITE)
             .addTo(this)
             .apply {
                 xy(0f, 0f) //at the top of the screen
@@ -42,7 +42,7 @@ class GameScene: Scene() {
         //Ball
         val ball = circle(16f, Colors.WHITE)
             .addTo(this)
-            .xy(windowBounds.width / 2f, windowBounds.height / 2f) //in the middle of the screen
+            .xy(globalBounds.width / 2f, globalBounds.height / 2f) //in the middle of the screen
 
         //Velocity of the ball
         var velocity = vec(0f, 1f)
@@ -54,7 +54,7 @@ class GameScene: Scene() {
                 player.x -= kotlin.math.min(scale, player.x) //When left is pressed, move left, but don't go out of the screen
             }
             if(input.keys[Key.RIGHT]) {
-                player.x += kotlin.math.min(scale, windowBounds.width - player.x - player.width) //When right is pressed, move right, but don't go out of the screen
+                player.x += kotlin.math.min(scale, globalBounds.width - player.x - player.width) //When right is pressed, move right, but don't go out of the screen
             }
             if(ball.collidesWith(player)) { //Check if the ball collides with the player
                 velocity = vec((ball.x - player.x) / player.width, -velocity.y)
@@ -62,18 +62,18 @@ class GameScene: Scene() {
                 velocity = vec((ball.x - enemy.x) / enemy.width, -velocity.y)
             }
             //Check for wall collisions
-            if(ball.x < 0 || ball.x > windowBounds.width - ball.width) {
+            if(ball.x < 0 || ball.x > globalBounds.width - ball.width) {
                 velocity = vec(-velocity.x, velocity.y)
             }
 
             //Check for top and bottom collisions
-            if(ball.y >= windowBounds.height - ball.height) {
-                ball.pos = vec(windowBounds.width / 2f, windowBounds.height / 2f)
+            if(ball.y >= globalBounds.height - ball.height) {
+                ball.pos = vec(globalBounds.width / 2f, globalBounds.height / 2f)
                 velocity = vec(0f, 1f)
                 points = 0
                 text.text = "Points: $points"
             } else if(ball.y <= 0) {
-                ball.pos = vec(windowBounds.width / 2f, windowBounds.height / 2f)
+                ball.pos = vec(globalBounds.width / 2f, globalBounds.height / 2f)
                 velocity = vec(0f, 1f)
                 points += 1
                 text.text = "Points: $points"
