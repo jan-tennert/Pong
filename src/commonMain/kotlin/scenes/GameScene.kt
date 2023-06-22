@@ -50,15 +50,26 @@ class GameScene: Scene() {
         //Add updater callback (called on each frame). TimeSpan is the time elapsed since the last frame
         addUpdater { timespan: TimeSpan ->
             val scale = timespan / 3.milliseconds
+
+            //Key input
             if(input.keys[Key.LEFT]) {
                 player.x -= kotlin.math.min(scale, player.x) //When left is pressed, move left, but don't go out of the screen
             }
             if(input.keys[Key.RIGHT]) {
                 player.x += kotlin.math.min(scale, globalBounds.width - player.x - player.width) //When right is pressed, move right, but don't go out of the screen
             }
-            if(ball.collidesWith(player)) { //Check if the ball collides with the player
+
+            //Mouse input
+            player.x = input.mousePos.x
+
+            //Touch input
+            if(input.touches.isNotEmpty()) {
+                player.x = input.touches.first().x
+            }
+
+            if(ball.collidesWith(player, CollisionKind.GLOBAL_RECT)) { //Check if the ball collides with the player
                 velocity = vec((ball.x - player.x) / player.width, -velocity.y)
-            } else if(ball.collidesWith(enemy)) {
+            } else if(ball.collidesWith(enemy, CollisionKind.GLOBAL_RECT)) {
                 velocity = vec((ball.x - enemy.x) / enemy.width, -velocity.y)
             }
             //Check for wall collisions
