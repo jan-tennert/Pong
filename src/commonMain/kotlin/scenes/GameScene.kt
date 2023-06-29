@@ -2,30 +2,31 @@ package scenes
 
 import korlibs.event.*
 import korlibs.image.color.*
-import korlibs.image.format.*
-import korlibs.io.file.std.*
-import korlibs.korge.*
 import korlibs.korge.scene.*
-import korlibs.korge.tween.*
 import korlibs.korge.view.*
 import korlibs.korge.view.align.*
 import korlibs.korge.view.collision.*
 import korlibs.math.geom.*
-import korlibs.math.interpolation.*
 import korlibs.time.*
-import scenes.*
-import kotlin.random.*
 
 class GameScene: Scene() {
 
     override suspend fun SContainer.sceneMain() {
-        var points = 0
+        var playerPoints = 0
+        var enemyPoints = 0
 
         //Text
-        val text = text("Points: $points", textSize = 10.0F)
+        val enemyPointText = text("Points: $enemyPoints", textSize = 15.0F)
             .addTo(this)
             .alignTopToTopOf(this)
             .alignLeftToLeftOf(this)
+        enemyPointText.y += 20f
+
+        val playerPointText = text("Points: $playerPoints", textSize = 15.0F)
+            .addTo(this)
+            .alignBottomToBottomOf(this)
+            .alignRightToRightOf(this)
+        playerPointText.y -= 20f
 
         // Player rectangle
         val player = solidRect(globalBounds.width / 4f, 20f, Colors.WHITE)
@@ -60,11 +61,15 @@ class GameScene: Scene() {
             }
 
             //Mouse input
-            player.x = input.mousePos.x
+            //player.x = input.mousePos.x
 
             //Touch input
-            if(input.touches.isNotEmpty()) {
-                player.x = input.touches.first().x
+            input.touches.forEach {
+                if(it.y < globalBounds.height / 2f) {
+                    enemy.x = kotlin.math.min(it.x, globalBounds.width - enemy.width)
+                } else {
+                    player.x = kotlin.math.min(it.x, globalBounds.width - player.width)
+                }
             }
 
             if(ball.collidesWith(player, CollisionKind.GLOBAL_RECT)) { //Check if the ball collides with the player
@@ -81,19 +86,19 @@ class GameScene: Scene() {
             if(ball.y >= globalBounds.height - ball.height) {
                 ball.pos = vec(globalBounds.width / 2f, globalBounds.height / 2f)
                 velocity = vec(0f, 1f)
-                points = 0
-                text.text = "Points: $points"
+                enemyPoints++
+                enemyPointText.text = "Points: $enemyPoints"
             } else if(ball.y <= 0) {
                 ball.pos = vec(globalBounds.width / 2f, globalBounds.height / 2f)
                 velocity = vec(0f, 1f)
-                points += 1
-                text.text = "Points: $points"
+                playerPoints++
+                playerPointText.text = "Points: $playerPoints"
             }
             ball.pos += velocity * scale
-            if (enemy.x + enemy.width / 2f > ball.x)
-                enemy.x -= kotlin.math.min(2f, enemy.x + enemy.width / 2f - ball.x)
-            else
-                enemy.x += kotlin.math.min(2f, ball.x - (enemy.x + enemy.width / 2f))
+//            if (enemy.x + enemy.width / 2f > ball.x)
+//                enemy.x -= kotlin.math.min(2f, enemy.x + enemy.width / 2f - ball.x)
+//            else
+//                enemy.x += kotlin.math.min(2f, ball.x - (enemy.x + enemy.width / 2f))
         }
     }
 
